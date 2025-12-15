@@ -3,9 +3,9 @@ import { describe, it, expect } from 'vitest'
 import App from '../App'
 
 describe('App', () => {
-  it('deve renderizar o título', () => {
+  it('deve renderizar o estado de carregamento inicial', () => {
     render(<App />)
     
-    expect(screen.getByText(/React \+ Vite \+ Tailwind/i)).toBeInTheDocument()
+    expect(screen.getByText(/Carregando.../i)).toBeInTheDocument()
   })
 })
