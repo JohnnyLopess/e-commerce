@@ -6,6 +6,6 @@ describe('App', () => {
   it('deve renderizar o título', () => {
     render(<App />)
     
-    expect(screen.getByText(/React \+ Vite \+ Tailwind/i)).toBeInTheDocument()
+    expect(screen.getByText(/Texto que nao existe/i)).toBeInTheDocument()
   })
 })
