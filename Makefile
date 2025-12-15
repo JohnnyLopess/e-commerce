@@ -4,65 +4,65 @@
 
 ## Builda imagem de desenvolvimento
 build-dev:
-	docker-compose build dev
+	docker compose build dev
 
 ## Builda imagem de produção
 build-prod:
-	docker-compose build prod
+	docker compose build prod
 
 # ==================== DOCKER UP ====================
 
 ## Sobe container de desenvolvimento (builda se necessário)
 up-dev:
-	docker-compose up dev
+	docker compose up dev
 
 ## Sobe container de produção (builda se necessário)
 up-prod:
-	docker-compose up prod -d
+	docker compose up prod -d
 
 ## Força rebuild + Up desenvolvimento
 dev:
-	docker-compose up dev --build
+	docker compose up dev --build
 
 ## Força rebuild + Up produção
 prod:
-	docker-compose up prod --build -d
+	docker compose up prod --build -d
 
 # ==================== DOCKER CONTROL ====================
 
 ## Para containers
 stop:
-	docker-compose down
+	docker compose down
 
 ## Remove tudo (containers, imagens, volumes)
 clean:
-	docker-compose down --rmi all --volumes --remove-orphans
+	docker compose down --rmi all --volumes --remove-orphans
 
 ## Mostra logs
 logs:
-	docker-compose logs -f
+	docker compose logs -f
 
 # ==================== COMANDOS NO CONTAINER ====================
 
 ## Instala dependências
 install:
-	docker-compose run --rm dev npm install
+	docker compose run --rm dev npm install
 
 ## Executa lint
 lint:
-	docker-compose run --rm dev npm run lint
+	docker compose run --rm dev npm run lint
 
 ## Executa testes
 test:
-	docker-compose run --rm dev npm run test:ci
+	docker compose run --rm dev npm run test:ci
 
 ## Gera build de produção
 build:
-	docker-compose run --rm dev npm run build
+	docker compose run --rm dev npm run build
 
 ## Acessa o shell do container
 shell:
-	docker-compose run --rm dev sh
+	docker compose run --rm dev sh
 
 # ==================== HELP ====================
 
