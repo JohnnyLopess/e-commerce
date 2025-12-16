@@ -15,3 +15,11 @@ export function getProductImageUrl(photo, size = 'medium') {
   const prefix = SIZE_PREFIX[size] || 'm'
   return `${IMAGE_BASE_URL}/ib.item.image.${size}/${prefix}-${photo}`
 }
+
+export function getResponsiveImageUrl(photo) {
+  return {
+    small: getProductImageUrl(photo, 'small'),
+    medium: getProductImageUrl(photo, 'medium'),
+    large: getProductImageUrl(photo, 'large')
+  }
+}

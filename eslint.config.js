@@ -23,7 +23,11 @@ export default [
         window: 'readonly',
         console: 'readonly',
         fetch: 'readonly',
-        global: 'readonly'
+        global: 'readonly',
+        setTimeout: 'readonly',
+        clearTimeout: 'readonly',
+        setInterval: 'readonly',
+        clearInterval: 'readonly'
       }
     },
     settings: {
