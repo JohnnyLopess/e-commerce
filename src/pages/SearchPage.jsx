@@ -55,8 +55,21 @@ function SearchPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-6">
-      <div className="max-w-7xl mx-auto px-4">
+    <div className="min-h-screen bg-gray-50">
+      {/* Breadcrumb */}
+      <div className="bg-white border-b border-gray-100">
+        <div className="max-w-7xl mx-auto px-4 py-3">
+          <nav className="flex items-center gap-2 text-sm">
+            <Link to="/" className="text-gray-500 hover:text-primary-600 transition-colors">
+              <i className="fa-solid fa-home"></i>
+            </Link>
+            <i className="fa-solid fa-chevron-right text-gray-300 text-xs"></i>
+            <span className="text-gray-800 font-medium">Busca</span>
+          </nav>
+        </div>
+      </div>
+
+      <div className="max-w-7xl mx-auto px-4 py-6">
         <h1 className="text-xl font-semibold text-gray-800 mb-6">
           {products.length > 0 
             ? `Resultados para "${query}" (${total} produtos)`
