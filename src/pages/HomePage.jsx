@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { getLayout, getItems } from '../services/api'
-import { getBannerUrl, getProductImageUrl } from '../utils/imageUrl'
+import { getBannerUrl } from '../utils/imageUrl'
+import ProductCard from '../components/ProductCard'
 
 function HomePage() {
   const [layout, setLayout] = useState(null)
@@ -102,85 +103,8 @@ function HomePage() {
     return categoryIcons[title] || { icon: 'fa-tag', color: 'bg-gray-100 text-gray-500' }
   }
 
-  const formatUnit = (unitType) => {
-    const units = {
-      'KG': '/kg',
-      'UNI': '/un'
-    }
-    return units[unitType] || ''
-  }
-
-  const renderProductCard = (product) => {
-    const photo = product.images?.[0] || ''
-    const originalPrice = product.prices?.[0]?.price || 0
-    const promoPrice = product.prices?.[0]?.promo_price
-    const finalPrice = product.min_price_valid || originalPrice
-    const hasDiscount = promoPrice && promoPrice < originalPrice
-    const discountPercent = hasDiscount ? Math.round((1 - promoPrice / originalPrice) * 100) : 0
-    const unit = formatUnit(product.unit_type)
-    
-    return (
-      <article
-        key={product.id}
-        className="group bg-white rounded-2xl p-3 sm:p-4 flex-shrink-0 w-[160px] sm:w-44 md:w-48 h-[280px] sm:h-[300px] md:h-[320px] relative border border-gray-100 hover:border-primary-200 hover:shadow-lg transition-all duration-300 flex flex-col"
-        role="listitem"
-      >
-        {hasDiscount && (
-          <span 
-            className="absolute top-3 left-3 z-10 bg-primary-500 text-white text-[10px] font-semibold px-2 py-1 rounded-lg"
-            aria-label={`Desconto de ${discountPercent}%`}
-          >
-            -{discountPercent}%
-          </span>
-        )}
-        
-        <Link 
-          to={`/produto/${product.slug}`}
-          className="flex flex-col flex-grow focus:outline-none focus:ring-2 focus:ring-primary-500 rounded-lg"
-          aria-label={`Ver detalhes de ${product.name}, R$ ${(hasDiscount ? promoPrice : finalPrice).toFixed(2)}`}
-        >
-          <div className="relative mb-3 flex-shrink-0">
-            <picture>
-              <source media="(min-width: 768px)" srcSet={getProductImageUrl(photo, 'medium')} />
-              <img
-                src={getProductImageUrl(photo, 'small')}
-                alt=""
-                className="w-full h-24 sm:h-28 md:h-32 object-contain group-hover:scale-105 transition-transform duration-300"
-                loading="lazy"
-              />
-            </picture>
-          </div>
-          
-          <h3 className="font-medium text-[11px] sm:text-xs md:text-sm text-gray-700 line-clamp-2 mb-2 flex-grow">
-            {product.name}
-          </h3>
-          
-          <div className="mt-auto">
-            {hasDiscount && (
-              <p className="text-gray-400 text-[10px] sm:text-xs line-through" aria-label={`Preço original: R$ ${originalPrice.toFixed(2)}`}>
-                R$ {originalPrice.toFixed(2)}
-              </p>
-            )}
-            <p className="text-gray-900 font-bold text-sm sm:text-base md:text-lg">
-              <span className="sr-only">Preço: </span>
-              R$ {(hasDiscount ? promoPrice : finalPrice).toFixed(2)}
-              <span className="text-gray-400 font-normal text-[10px] sm:text-xs ml-0.5">{unit || '/un'}</span>
-            </p>
-          </div>
-        </Link>
-        
-        <button 
-          className="absolute bottom-3 right-3 w-8 h-8 sm:w-9 sm:h-9 bg-primary-500 text-white rounded-full flex items-center justify-center opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-300 hover:bg-primary-600 active:scale-95 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
-          onClick={(e) => {
-            e.preventDefault()
-            e.stopPropagation()
-          }}
-          aria-label={`Adicionar ${product.name} ao carrinho`}
-        >
-          <i className="fa-solid fa-plus text-sm" aria-hidden="true"></i>
-        </button>
-      </article>
-    )
+  const renderProductCard = (product, isOffer = false) => {
+    return <ProductCard key={product.id} product={product} isFromOfferSection={isOffer} />
   }
 
   return (
@@ -376,7 +300,7 @@ function HomePage() {
               role="list"
               aria-label="Produtos em oferta"
             >
-              {promoProducts.map(renderProductCard)}
+              {promoProducts.map(product => renderProductCard(product, true))}
             </div>
           </div>
         </section>
@@ -454,7 +378,7 @@ function HomePage() {
                 role="list"
                 aria-label={`Produtos de ${collection.title}`}
               >
-                {displayProducts.map(renderProductCard)}
+                {displayProducts.map(product => renderProductCard(product, false))}
               </div>
             </div>
           </section>

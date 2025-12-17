@@ -161,11 +161,12 @@ describe('CategoryPage', () => {
     })
   })
 
-  it('deve exibir breadcrumb com link para Home', async () => {
+  it('deve exibir breadcrumb com ícone de Home', async () => {
     renderCategoryPage()
     
     await waitFor(() => {
-      expect(screen.getByText('Home')).toBeInTheDocument()
+      const homeLink = screen.getByRole('link', { name: '' })
+      expect(homeLink).toHaveAttribute('href', '/')
     })
   })
 

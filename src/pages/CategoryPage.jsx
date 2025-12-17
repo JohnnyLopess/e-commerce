@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Link, useParams, useSearchParams } from 'react-router-dom'
 import { getItems, getLayout, getMenu, getSubcategoryName, getAllItemsByCategory } from '../services/api'
-import { getProductImageUrl } from '../utils/imageUrl'
+import CategoryProductCard from '../components/CategoryProductCard'
 
 function getDescriptionPreview(html, maxLength = 120) {
   if (!html) return ''
@@ -275,10 +275,6 @@ function CategoryPage() {
     })
   }
 
-  const formatUnit = (unitType) => {
-    const units = { 'KG': '/kg', 'UNI': '/un' }
-    return units[unitType] || '/un'
-  }
 
   if (error) {
     return (
@@ -294,9 +290,11 @@ function CategoryPage() {
       <div className="bg-white border-b">
         <div className="max-w-7xl mx-auto px-4 py-6">
           <div className="flex items-center gap-2 text-sm text-gray-500 mb-2">
-            <Link to="/" className="hover:text-primary-600">Home</Link>
-            <i className="fa-solid fa-chevron-right text-xs"></i>
-            <span className="text-gray-800">{categoryTitle}</span>
+            <Link to="/" className="hover:text-primary-600 transition-colors">
+              <i className="fa-solid fa-home"></i>
+            </Link>
+            <i className="fa-solid fa-chevron-right text-xs text-gray-300"></i>
+            <span className="text-gray-800 font-medium">{categoryTitle}</span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">{categoryTitle}</h1>
           <p className="text-gray-500 mt-1">
@@ -477,175 +475,52 @@ function CategoryPage() {
                 {/* Visualização em Grade */}
                 {viewMode === 'grid' && (
                   <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-                    {paginatedProducts.map((product) => {
-                      const photo = product.images?.[0] || ''
-                      const originalPrice = product.prices?.[0]?.price || 0
-                      const promoPrice = product.prices?.[0]?.promo_price
-                      const finalPrice = product.min_price_valid || originalPrice
-                      const hasDiscount = promoPrice && promoPrice < originalPrice
-                      const discountPercent = hasDiscount ? Math.round((1 - promoPrice / originalPrice) * 100) : 0
-                      const unit = formatUnit(product.unit_type)
-
-                      return (
-                        <Link
-                          key={product.id}
-                          to={`/produto/${product.slug}`}
-                          className="group bg-white rounded-2xl p-4 relative border border-gray-100 hover:border-primary-200 hover:shadow-lg transition-all duration-300 flex flex-col"
-                        >
-                          {hasDiscount && (
-                            <span className="absolute top-3 left-3 z-10 bg-primary-500 text-white text-[10px] font-semibold px-2 py-1 rounded-lg">
-                              -{discountPercent}%
-                            </span>
-                          )}
-                          
-                          <div className="relative mb-3">
-                            <img
-                              src={getProductImageUrl(photo, 'medium')}
-                              alt={product.name}
-                              className="w-full h-32 sm:h-40 object-contain group-hover:scale-105 transition-transform duration-300"
-                              loading="lazy"
-                            />
-                            
-                            <button 
-                              className="absolute bottom-0 right-0 w-9 h-9 bg-primary-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-500"
-                              onClick={(e) => {
-                                e.preventDefault()
-                              }}
-                              aria-label={`Adicionar ${product.name} ao carrinho`}
-                            >
-                              <i className="fa-solid fa-plus text-sm" aria-hidden="true"></i>
-                            </button>
-                          </div>
-                          
-                          <h3 className="font-medium text-sm text-gray-700 line-clamp-2 mb-2 flex-grow">
-                            {product.name}
-                          </h3>
-                          
-                          <div className="mt-auto">
-                            {hasDiscount && (
-                              <p className="text-gray-400 text-xs line-through">
-                                R$ {originalPrice.toFixed(2)}
-                              </p>
-                            )}
-                            <p className="text-gray-900 font-bold text-lg">
-                              R$ {(hasDiscount ? promoPrice : finalPrice).toFixed(2)}
-                              <span className="text-gray-400 font-normal text-xs ml-0.5">{unit}</span>
-                            </p>
-                          </div>
-                        </Link>
-                      )
-                    })}
+                    {paginatedProducts.map((product) => (
+                      <CategoryProductCard key={product.id} product={product} viewMode="grid" />
+                    ))}
                   </div>
                 )}
 
                 {/* Visualização em Lista */}
                 {viewMode === 'list' && (
                   <div className="flex flex-col gap-3">
-                    {paginatedProducts.map((product) => {
-                      const photo = product.images?.[0] || ''
-                      const originalPrice = product.prices?.[0]?.price || 0
-                      const promoPrice = product.prices?.[0]?.promo_price
-                      const finalPrice = product.min_price_valid || originalPrice
-                      const hasDiscount = promoPrice && promoPrice < originalPrice
-                      const discountPercent = hasDiscount ? Math.round((1 - promoPrice / originalPrice) * 100) : 0
-                      const unit = formatUnit(product.unit_type)
-
-                      return (
-                        <Link
-                          key={product.id}
-                          to={`/produto/${product.slug}`}
-                          className="group bg-white rounded-xl p-4 border border-gray-100 hover:border-primary-200 hover:shadow-lg transition-all duration-300 flex gap-4 h-36 sm:h-40"
-                        >
-                          <div className="relative flex-shrink-0 w-24 h-24 sm:w-32 sm:h-32">
-                            {hasDiscount && (
-                              <span className="absolute top-1 left-1 z-10 bg-primary-500 text-white text-[10px] font-semibold px-2 py-0.5 rounded">
-                                -{discountPercent}%
-                              </span>
-                            )}
-                            <img
-                              src={getProductImageUrl(photo, 'small')}
-                              alt={product.name}
-                              className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300"
-                              loading="lazy"
-                            />
-                          </div>
-                          
-                          <div className="flex-1 flex flex-col justify-between min-w-0">
-                            <div>
-                              <h3 className="font-medium text-base sm:text-lg text-gray-800 line-clamp-2 mb-1">
-                                {product.name}
-                              </h3>
-                              {product.brand && (
-                                <p className="text-sm text-primary-600 font-medium mb-1">{product.brand}</p>
-                              )}
-                              {product.description && (
-                                <p className="text-xs sm:text-sm text-gray-500 hidden sm:block">
-                                  {getDescriptionPreview(product.description, 100)}
-                                </p>
-                              )}
-                            </div>
-                            
-                            <div className="flex items-end justify-between mt-2 sm:mt-3">
-                              <div>
-                                {hasDiscount && (
-                                  <p className="text-gray-400 text-xs line-through">
-                                    R$ {originalPrice.toFixed(2)}
-                                  </p>
-                                )}
-                                <p className="text-gray-900 font-bold text-lg sm:text-xl">
-                                  R$ {(hasDiscount ? promoPrice : finalPrice).toFixed(2)}
-                                  <span className="text-gray-400 font-normal text-xs ml-0.5">{unit}</span>
-                                </p>
-                              </div>
-                              
-                              <button 
-                                className="w-10 h-10 bg-primary-500 text-white rounded-full flex items-center justify-center hover:bg-primary-600 transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500"
-                                onClick={(e) => {
-                                  e.preventDefault()
-                                }}
-                                aria-label={`Adicionar ${product.name} ao carrinho`}
-                              >
-                                <i className="fa-solid fa-plus" aria-hidden="true"></i>
-                              </button>
-                            </div>
-                          </div>
-                        </Link>
-                      )
-                    })}
+                    {paginatedProducts.map((product) => (
+                      <CategoryProductCard key={product.id} product={product} viewMode="list" />
+                    ))}
                   </div>
                 )}
 
                 {/* Paginação */}
                 {totalPages > 1 && (
-                  <div className="flex justify-center items-center gap-2 mt-8">
+                  <div className="flex justify-center items-center gap-1 sm:gap-2 mt-8 flex-wrap">
                     <button
                       onClick={() => setPage(p => Math.max(1, p - 1))}
                       disabled={page === 1}
-                      className="px-4 py-2 bg-white border border-gray-200 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 transition-colors"
+                      className="w-10 h-10 sm:w-auto sm:h-auto sm:px-4 sm:py-2 bg-white border border-gray-200 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 transition-colors flex items-center justify-center"
                       aria-label="Página anterior"
                     >
-                      <i className="fa-solid fa-chevron-left mr-2" aria-hidden="true"></i>
-                      Anterior
+                      <i className="fa-solid fa-chevron-left sm:mr-2" aria-hidden="true"></i>
+                      <span className="hidden sm:inline">Anterior</span>
                     </button>
                     
                     <div className="flex items-center gap-1">
-                      {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                      {Array.from({ length: Math.min(3, totalPages) }, (_, i) => {
                         let pageNum
-                        if (totalPages <= 5) {
+                        if (totalPages <= 3) {
                           pageNum = i + 1
-                        } else if (page <= 3) {
+                        } else if (page <= 2) {
                           pageNum = i + 1
-                        } else if (page >= totalPages - 2) {
-                          pageNum = totalPages - 4 + i
+                        } else if (page >= totalPages - 1) {
+                          pageNum = totalPages - 2 + i
                         } else {
-                          pageNum = page - 2 + i
+                          pageNum = page - 1 + i
                         }
                         
                         return (
                           <button
                             key={pageNum}
                             onClick={() => setPage(pageNum)}
-                            className={`w-10 h-10 rounded-lg font-medium transition-colors ${
+                            className={`w-9 h-9 sm:w-10 sm:h-10 rounded-lg font-medium text-sm sm:text-base transition-colors ${
                               page === pageNum 
                                 ? 'bg-primary-500 text-white' 
                                 : 'bg-white border border-gray-200 hover:bg-gray-50'
@@ -662,11 +537,11 @@ function CategoryPage() {
                     <button
                       onClick={() => setPage(p => Math.min(totalPages, p + 1))}
                       disabled={page >= totalPages}
-                      className="px-4 py-2 bg-white border border-gray-200 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 transition-colors"
+                      className="w-10 h-10 sm:w-auto sm:h-auto sm:px-4 sm:py-2 bg-white border border-gray-200 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 transition-colors flex items-center justify-center"
                       aria-label="Próxima página"
                     >
-                      Próxima
-                      <i className="fa-solid fa-chevron-right ml-2" aria-hidden="true"></i>
+                      <span className="hidden sm:inline">Próxima</span>
+                      <i className="fa-solid fa-chevron-right sm:ml-2" aria-hidden="true"></i>
                     </button>
                   </div>
                 )}
